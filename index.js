@@ -16,11 +16,11 @@ mongoose
   });
 
 let shortUrlSchema = new mongoose.Schema({
-  original: {
+  original_url: {
     required: true,
     type: String,
   },
-  short: String,
+  short_url: String,
 });
 
 let ShortUrl = mongoose.model("ShortUrl", shortUrlSchema);
@@ -62,7 +62,7 @@ app.get("/api/shorturl/:inputShortUrl", async (request, response) => {
   let destinyUrl = request.params.inputShortUrl;
   let urlObject = await findShorturlByShorturl(destinyUrl);
   if (urlObject) {
-    response.setHeader("location", urlObject.original);
+    response.setHeader("location", urlObject.original_url);
     response.statusCode = 302;
     response.end();
   }
@@ -87,7 +87,7 @@ function findHighestShort() {
 
 function findShortUrlByUrl(inputUrl) {
   try {
-    return ShortUrl.findOne({ original: inputUrl });
+    return ShortUrl.findOne({ original_url: inputUrl });
   } catch (error) {
     console.log(error);
   }
