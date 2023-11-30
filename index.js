@@ -38,7 +38,13 @@ app.post(
   async (req, res) => {
     let shortUrl = 1;
     let inputUrl = req.body.url;
-    if (stringIsAValidUrl(inputUrl)) {
+
+    let urlRegex = new RegExp(
+      /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
+    );
+
+    if (inputUrl.match(urlRegex)) {
+      // if (stringIsAValidUrl(inputUrl)) {
       const highestShortDoc = await findHighestShort();
       if (highestShortDoc.length === 1) {
         shortUrl = parseInt(highestShortDoc[0].short_url) + 1;
