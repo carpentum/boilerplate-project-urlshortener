@@ -40,8 +40,8 @@ app.post(
     let inputUrl = req.body.url;
     if (stringIsAValidUrl(inputUrl)) {
       const highestShortDoc = await findHighestShort();
-      if (highestShortDoc) {
-        shortUrl = parseInt(highestShortDoc[0].short) + 1;
+      if (highestShortDoc.length === 1) {
+        shortUrl = parseInt(highestShortDoc[0].short_url) + 1;
       }
       const urlObject = await findShortUrlByUrl(inputUrl);
       if (!urlObject) {
@@ -79,7 +79,7 @@ const stringIsAValidUrl = (url) => {
 
 function findHighestShort() {
   try {
-    return ShortUrl.find().sort({ short: -1 }).limit(1);
+    return ShortUrl.find().sort({ short_url: -1 }).limit(1);
   } catch (error) {
     console.log(error);
   }
@@ -95,7 +95,7 @@ function findShortUrlByUrl(inputUrl) {
 
 const findShorturlByShorturl = (shortUrl) => {
   try {
-    return ShortUrl.findOne({ short: shortUrl });
+    return ShortUrl.findOne({ short_url: shortUrl });
   } catch (error) {
     console.log(error);
   }
@@ -116,11 +116,6 @@ app.get("/api/shorturl", function (req, res) {
     console.log(address);
     res.json({ original_url: address, short_url: "1" });
   });
-});
-
-// Your first API endpoint
-app.get("/api/shorturl/1", function (req, res) {
-  res.redirect("freeCodeCamp.org");
 });
 
 app.listen(port, function () {
