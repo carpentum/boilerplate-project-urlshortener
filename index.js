@@ -51,9 +51,14 @@ app.post(
         });
         const newShortUrl = await newDoc.save();
         res.json(newShortUrl);
-      } else res.json(urlObject);
+        res.statusCode = 200;
+      } else {
+        res.json(urlObject);
+        res.statusCode = 200;
+      }
     } else {
       res.json({ error: "invalid url" });
+      res.statusCode = 200;
     }
   }
 );
