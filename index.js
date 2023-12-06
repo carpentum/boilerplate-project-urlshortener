@@ -43,29 +43,24 @@ app.post(
       /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
     );
 
-    if (inputUrl.match(urlRegex)) {
-      // if (stringIsAValidUrl(inputUrl)) {
-      const highestShortDoc = await findHighestShort();
-      if (highestShortDoc.length === 1) {
-        shortUrl = parseInt(highestShortDoc[0].short_url) + 1;
-      }
-      const urlObject = await findShortUrlByUrl(inputUrl);
-      if (!urlObject) {
-        const newDoc = new ShortUrl({
-          original_url: inputUrl,
-          short_url: shortUrl,
-        });
-        const newShortUrl = await newDoc.save();
-        res.json(newShortUrl);
-        res.statusCode = 200;
-      } else {
-        res.json(urlObject);
-        res.statusCode = 200;
-      }
-    } else {
-      res.json({ error: "invalid url" });
-      res.statusCode = 200;
+    if (!inputUrl.match(urlRegex)) {
+      return res.status(200).json({ error: "invalid url" });
     }
+    // if (stringIsAValidUrl(inputUrl)) {
+    const highestShortDoc = await findHighestShort();
+    if (highestShortDoc.length === 1) {
+      shortUrl = parseInt(highestShortDoc[0].short_url) + 1;
+    }
+    const urlObject = await findShortUrlByUrl(inputUrl);
+    if (!urlObject) {
+      const newDoc = new ShortUrl({
+        original_url: inputUrl,
+        short_url: shortUrl,
+      });
+      const newShortUrl = await newDoc.save();
+      return res.status(200).json(newShortUrl);
+    }
+    res.status(200).json(urlObject);
   }
 );
 
@@ -73,9 +68,7 @@ app.get("/api/shorturl/:inputShortUrl", async (request, response) => {
   let destinyUrl = request.params.inputShortUrl;
   let urlObject = await findShorturlByShorturl(destinyUrl);
   if (urlObject) {
-    response.setHeader("location", urlObject.original_url);
-    response.statusCode = 302;
-    response.end();
+    response.status(302).setHeader("location", urlObject.original_url).end();
   }
 });
 
@@ -113,19 +106,19 @@ const findShorturlByShorturl = (shortUrl) => {
 };
 
 app.get("/", function (req, res) {
-  res.sendFile(process.cwd() + "/views/index.html");
+  res.status(200).sendFile(process.cwd() + "/views/index.html");
 });
 
 // Your first API endpoint
 app.get("/api/hello", function (req, res) {
-  res.json({ greeting: "hello API" });
+  res.status(200).json({ greeting: "hello API" });
 });
 
 // Your first API endpoint
 app.get("/api/shorturl", function (req, res) {
   dns.lookup("freeCodeCamp.org", (err, address) => {
     console.log(address);
-    res.json({ original_url: address, short_url: "1" });
+    res.status(200).json({ original_url: address, short_url: "1" });
   });
 });
 
